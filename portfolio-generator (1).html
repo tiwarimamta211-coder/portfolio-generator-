@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Generator — Build Your Digital Identity</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0e0d;
+    --ink2: #3a3835;
+    --ink3: #7a7774;
+    --paper: #f7f4ef;
+    --paper2: #edeae3;
+    --paper3: #e2ddd4;
+    --accent: #d4522a;
+    --accent2: #e8833a;
+    --gold: #c9a84c;
+    --teal: #2a7d6b;
+    --blue: #2c5f8a;
+    --border: #d5d0c5;
+    --shadow: rgba(15,14,13,0.08);
+    --shadow2: rgba(15,14,13,0.16);
+    --radius: 6px;
+    --radius-lg: 12px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-ui: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--ink);
+    border-bottom: 1px solid #2a2825;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 58px;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.3rem; color: var(--paper);
+    display: flex; align-items: center; gap: 10px; letter-spacing: -0.02em;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .header-actions { display: flex; gap: 10px; }
+  .btn {
+    font-family: var(--font-ui); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 7px 18px; border-radius: var(--radius);
+    cursor: pointer; transition: all 0.18s; border: none; outline: none;
+  }
+  .btn-ghost {
+    background: transparent; color: var(--paper3);
+    border: 1px solid #3a3835;
+  }
+  .btn-ghost:hover { background: #1e1d1b; color: var(--paper); }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #b84520; transform: translateY(-1px); }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-teal:hover { background: #236558; transform: translateY(-1px); }
+
+  /* ── MAIN LAYOUT ── */
+  .app-body { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 58px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: #fff; border-right: 1px solid var(--border);
+    overflow-y: auto; max-height: calc(100vh - 58px);
+    position: sticky; top: 58px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: var(--paper2); }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Tab Nav */
+  .tab-nav {
+    display: flex; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: #fff; z-index: 10;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 6px; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3);
+    background: none; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; transition: all 0.15s; font-family: var(--font-ui);
+  }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: var(--ink2); background: var(--paper); }
+
+  .tab-panel { display: none; padding: 1.25rem; }
+  .tab-panel.active { display: block; }
+
+  /* Form Elements */
+  .form-section { margin-bottom: 1.5rem; }
+  .form-section-title {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink3); margin-bottom: 0.75rem;
+    padding-bottom: 6px; border-bottom: 1px solid var(--paper2);
+  }
+  .form-group { margin-bottom: 10px; }
+  .form-label {
+    display: block; font-size: 0.72rem; font-weight: 600; color: var(--ink2);
+    margin-bottom: 4px; letter-spacing: 0.02em;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; font-family: var(--font-ui); font-size: 0.82rem;
+    color: var(--ink); background: var(--paper); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 10px;
+    transition: border-color 0.15s; outline: none; resize: vertical;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent); background: #fff;
+  }
+  .form-textarea { min-height: 70px; }
+
+  /* Color swatches */
+  .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .color-swatch {
+    width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.15s; position: relative;
+  }
+  .color-swatch.selected { border-color: var(--ink); box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--ink); }
+
+  /* Theme cards */
+  .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .theme-card {
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 10px; cursor: pointer; transition: all 0.15s; overflow: hidden;
+  }
+  .theme-card.selected { border-color: var(--accent); background: #fff5f2; }
+  .theme-card:hover:not(.selected) { border-color: var(--ink2); }
+  .theme-preview {
+    height: 50px; border-radius: 3px; margin-bottom: 6px;
+    display: flex; align-items: flex-end; padding: 4px 6px; gap: 3px;
+  }
+  .theme-bar { height: 6px; border-radius: 2px; flex: 1; }
+  .theme-name { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; }
+
+  /* Skills tags */
+  .skills-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .skill-tag {
+    background: var(--paper2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 3px 10px; font-size: 0.72rem;
+    font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: default;
+  }
+  .skill-tag-remove {
+    cursor: pointer; color: var(--ink3); font-size: 0.9rem; line-height: 1;
+    transition: color 0.12s; background: none; border: none; padding: 0;
+  }
+  .skill-tag-remove:hover { color: var(--accent); }
+  .skill-input-row { display: flex; gap: 6px; }
+  .skill-input-row .form-input { flex: 1; }
+
+  /* Projects */
+  .project-item {
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 10px; margin-bottom: 8px;
+  }
+  .project-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .project-item-title { font-size: 0.78rem; font-weight: 700; }
+  .btn-sm {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+    cursor: pointer; border: 1px solid; font-family: var(--font-ui); transition: all 0.15s;
+  }
+  .btn-danger { border-color: #e24b4a; color: #e24b4a; background: transparent; }
+  .btn-danger:hover { background: #fdf0f0; }
+
+  /* Accordion */
+  .accordion-item { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; overflow: hidden; }
+  .accordion-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; cursor: pointer; background: var(--paper);
+    font-size: 0.78rem; font-weight: 600; user-select: none;
+    transition: background 0.12s;
+  }
+  .accordion-header:hover { background: var(--paper2); }
+  .accordion-arrow { transition: transform 0.2s; font-size: 0.7rem; }
+  .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 10px 12px; background: #fff; border-top: 1px solid var(--border); }
+  .accordion-item.open .accordion-body { display: block; }
+
+  /* Range slider */
+  .range-row { display: flex; align-items: center; gap: 10px; }
+  .range-label { font-size: 0.72rem; color: var(--ink3); min-width: 28px; text-align: right; }
+  input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 4px;
+    background: var(--paper2); border-radius: 2px; outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+  .toggle-label { font-size: 0.78rem; font-weight: 600; }
+  .toggle {
+    position: relative; width: 36px; height: 20px;
+    background: var(--paper3); border-radius: 10px; cursor: pointer;
+    transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle.on { background: var(--teal); }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { left: 18px; }
+
+  /* Progress bar */
+  .progress-bar-wrap { background: var(--paper2); border-radius: 3px; height: 6px; margin-top: 4px; }
+  .progress-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+  /* ── PREVIEW PANE ── */
+  .preview-pane {
+    display: flex; flex-direction: column;
+    background: var(--paper2);
+  }
+  .preview-toolbar {
+    background: var(--ink); color: var(--paper3);
+    display: flex; align-items: center; gap: 12px; padding: 10px 1.5rem;
+    border-bottom: 1px solid #2a2825;
+  }
+  .preview-toolbar-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; flex: 1; }
+  .device-btns { display: flex; gap: 4px; }
+  .device-btn {
+    width: 32px; height: 32px; border-radius: 5px; border: 1px solid #3a3835;
+    background: none; color: var(--ink3); cursor: pointer; display: flex;
+    align-items: center; justify-content: center; font-size: 1rem; transition: all 0.15s;
+  }
+  .device-btn.active { background: #2a2825; color: var(--paper); border-color: #4a4845; }
+  .device-btn:hover:not(.active) { background: #1e1d1b; }
+  .preview-viewport {
+    flex: 1; display: flex; justify-content: center; align-items: flex-start;
+    padding: 2rem; overflow: auto;
+  }
+  .preview-frame-wrap {
+    transition: width 0.3s, box-shadow 0.3s;
+    background: #fff; border-radius: var(--radius-lg);
+    overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.18);
+  }
+  .preview-frame-wrap.desktop { width: 100%; max-width: 960px; }
+  .preview-frame-wrap.tablet { width: 768px; }
+  .preview-frame-wrap.mobile { width: 375px; border-radius: 24px; box-shadow: 0 4px 40px rgba(0,0,0,0.28); }
+
+  /* Code panel */
+  .code-panel {
+    display: none; flex-direction: column;
+    background: #1a1917; color: #d4cfc6;
+  }
+  .code-panel.visible { display: flex; }
+  .code-toolbar {
+    display: flex; align-items: center; gap: 12px; padding: 10px 1.5rem;
+    border-bottom: 1px solid #2a2825; background: var(--ink);
+  }
+  .code-toolbar-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper3); flex: 1; }
+  .code-output {
+    flex: 1; overflow: auto; padding: 1.5rem;
+    font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.7;
+    white-space: pre; color: #c9c4bb;
+  }
+  .code-output::-webkit-scrollbar { width: 6px; height: 6px; }
+  .code-output::-webkit-scrollbar-track { background: #1a1917; }
+  .code-output::-webkit-scrollbar-thumb { background: #3a3835; border-radius: 3px; }
+
+  /* Status bar */
+  .status-bar {
+    background: var(--ink); color: var(--ink3); font-size: 0.65rem;
+    font-family: var(--font-mono); padding: 4px 1.5rem; display: flex;
+    align-items: center; gap: 16px; border-top: 1px solid #2a2825;
+  }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+
+  /* Toast notification */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    background: var(--ink); color: var(--paper); padding: 12px 20px;
+    border-radius: var(--radius); font-size: 0.8rem; font-weight: 600;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transform: translateY(60px); opacity: 0;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 1rem; }
+
+  /* ══════════════════════════════════════
+     GENERATED PORTFOLIO THEMES
+  ══════════════════════════════════════ */
+
+  /* Shared portfolio styles */
+  .pf-root {
+    font-family: var(--font-ui); color: var(--pf-ink);
+    background: var(--pf-bg); min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* ── THEME: Minimal ── */
+  .theme-minimal {
+    --pf-bg: #fafaf8; --pf-bg2: #f2f0eb; --pf-ink: #1a1916;
+    --pf-ink2: #5a5753; --pf-border: #e0ddd6;
+    --pf-accent: var(--pf-color, #d4522a);
+  }
+
+  /* ── THEME: Dark ── */
+  .theme-dark {
+    --pf-bg: #101010; --pf-bg2: #1a1a1a; --pf-ink: #f0ede6;
+    --pf-ink2: #8a8780; --pf-border: #2a2a2a;
+    --pf-accent: var(--pf-color, #e8833a);
+  }
+
+  /* ── THEME: Bold ── */
+  .theme-bold {
+    --pf-bg: #fff; --pf-bg2: #f5f5f5; --pf-ink: #0a0a0a;
+    --pf-ink2: #555; --pf-border: #e0e0e0;
+    --pf-accent: var(--pf-color, #2a7d6b);
+  }
+
+  /* ── THEME: Retro ── */
+  .theme-retro {
+    --pf-bg: #fdf6e3; --pf-bg2: #f5ead0; --pf-ink: #1c1812;
+    --pf-ink2: #5a4f3a; --pf-border: #d8c89a;
+    --pf-accent: var(--pf-color, #c9a84c);
+  }
+
+  /* Portfolio nav */
+  .pf-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px; border-bottom: 1px solid var(--pf-border);
+    position: sticky; top: 0; z-index: 50;
+    background: var(--pf-bg); backdrop-filter: blur(10px);
+  }
+  .pf-nav-logo {
+    font-family: var(--font-display); font-size: 1.2rem; color: var(--pf-ink);
+    letter-spacing: -0.02em;
+  }
+  .pf-nav-links { display: flex; gap: 2rem; }
+  .pf-nav-link {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--pf-ink2); text-decoration: none;
+    transition: color 0.15s; cursor: pointer;
+  }
+  .pf-nav-link:hover { color: var(--pf-accent); }
+  .pf-nav-cta {
+    background: var(--pf-accent); color: #fff; padding: 8px 18px;
+    border-radius: 4px; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    border: none; font-family: var(--font-ui);
+  }
+
+  /* Hero */
+  .pf-hero {
+    padding: 80px 5% 80px; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .pf-hero-eyebrow {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--pf-accent); margin-bottom: 16px;
+  }
+  .pf-hero-name {
+    font-family: var(--font-display); font-size: clamp(2.2rem, 4vw, 3.5rem);
+    line-height: 1.1; color: var(--pf-ink); margin-bottom: 12px; letter-spacing: -0.02em;
+  }
+  .pf-hero-role {
+    font-size: clamp(1rem, 1.8vw, 1.25rem); color: var(--pf-ink2); margin-bottom: 20px; font-weight: 500;
+  }
+  .pf-hero-bio { font-size: 0.9rem; color: var(--pf-ink2); line-height: 1.8; margin-bottom: 28px; }
+  .pf-hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pf-btn-primary {
+    background: var(--pf-accent); color: #fff; padding: 12px 28px;
+    border-radius: 4px; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    border: none; font-family: var(--font-ui); transition: opacity 0.15s;
+  }
+  .pf-btn-primary:hover { opacity: 0.85; }
+  .pf-btn-outline {
+    background: transparent; color: var(--pf-ink);
+    border: 1.5px solid var(--pf-border); padding: 12px 28px;
+    border-radius: 4px; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    font-family: var(--font-ui); transition: border-color 0.15s;
+  }
+  .pf-btn-outline:hover { border-color: var(--pf-ink); }
+  .pf-hero-avatar {
+    aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--pf-bg2); border: 1px solid var(--pf-border);
+    max-width: 340px; margin-left: auto;
+  }
+  .pf-avatar-placeholder {
+    font-family: var(--font-display); font-size: 5rem; color: var(--pf-accent);
+    user-select: none; opacity: 0.7;
+  }
+
+  /* Stats row */
+  .pf-stats {
+    display: flex; gap: 0; border-top: 1px solid var(--pf-border);
+    border-bottom: 1px solid var(--pf-border);
+  }
+  .pf-stat {
+    flex: 1; padding: 24px; text-align: center;
+    border-right: 1px solid var(--pf-border);
+  }
+  .pf-stat:last-child { border-right: none; }
+  .pf-stat-num {
+    font-family: var(--font-display); font-size: 2rem; color: var(--pf-ink);
+    letter-spacing: -0.03em;
+  }
+  .pf-stat-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pf-ink2); margin-top: 2px; }
+
+  /* Section */
+  .pf-section { padding: 80px 5%; max-width: 1100px; margin: 0 auto; }
+  .pf-section-header { margin-bottom: 40px; }
+  .pf-section-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--pf-accent); margin-bottom: 8px;
+  }
+  .pf-section-title {
+    font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.4rem);
+    color: var(--pf-ink); letter-spacing: -0.02em;
+  }
+
+  /* Skills */
+  .pf-skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .pf-skill-card {
+    background: var(--pf-bg2); border: 1px solid var(--pf-border);
+    border-radius: 8px; padding: 16px;
+  }
+  .pf-skill-name { font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; color: var(--pf-ink); }
+  .pf-skill-bar { background: var(--pf-border); border-radius: 3px; height: 5px; }
+  .pf-skill-fill { height: 100%; border-radius: 3px; background: var(--pf-accent); transition: width 0.8s; }
+
+  /* Projects grid */
+  .pf-projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .pf-project-card {
+    border: 1px solid var(--pf-border); border-radius: 10px; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+    background: var(--pf-bg);
+  }
+  .pf-project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+  .pf-project-thumb {
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; background: var(--pf-bg2); border-bottom: 1px solid var(--pf-border);
+  }
+  .pf-project-body { padding: 16px; }
+  .pf-project-category {
+    font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--pf-accent); margin-bottom: 6px;
+  }
+  .pf-project-name { font-size: 0.95rem; font-weight: 700; color: var(--pf-ink); margin-bottom: 6px; }
+  .pf-project-desc { font-size: 0.78rem; color: var(--pf-ink2); line-height: 1.6; }
+  .pf-project-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+  .pf-tag {
+    background: var(--pf-bg2); border: 1px solid var(--pf-border);
+    border-radius: 20px; padding: 2px 8px; font-size: 0.65rem; font-weight: 600;
+    color: var(--pf-ink2);
+  }
+
+  /* Experience */
+  .pf-exp-list { display: flex; flex-direction: column; gap: 24px; }
+  .pf-exp-item { display: grid; grid-template-columns: 140px 1fr; gap: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--pf-border); }
+  .pf-exp-item:last-child { border-bottom: none; }
+  .pf-exp-date { font-size: 0.72rem; font-weight: 700; color: var(--pf-ink2); padding-top: 3px; }
+  .pf-exp-role { font-size: 0.95rem; font-weight: 700; color: var(--pf-ink); margin-bottom: 2px; }
+  .pf-exp-company { font-size: 0.8rem; color: var(--pf-accent); font-weight: 600; margin-bottom: 8px; }
+  .pf-exp-desc { font-size: 0.82rem; color: var(--pf-ink2); line-height: 1.7; }
+
+  /* Contact */
+  .pf-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .pf-contact-info { display: flex; flex-direction: column; gap: 16px; }
+  .pf-contact-item { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--pf-ink2); }
+  .pf-contact-icon {
+    width: 36px; height: 36px; border-radius: 8px; background: var(--pf-bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; border: 1px solid var(--pf-border); flex-shrink: 0;
+  }
+  .pf-contact-form { display: flex; flex-direction: column; gap: 12px; }
+  .pf-form-input, .pf-form-textarea {
+    background: var(--pf-bg2); border: 1px solid var(--pf-border);
+    border-radius: 6px; padding: 10px 14px;
+    font-size: 0.84rem; color: var(--pf-ink); font-family: var(--font-ui);
+    outline: none; width: 100%;
+  }
+  .pf-form-textarea { min-height: 100px; resize: vertical; }
+
+  /* Footer */
+  .pf-footer {
+    border-top: 1px solid var(--pf-border); padding: 30px 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.75rem; color: var(--pf-ink2);
+  }
+  .pf-socials { display: flex; gap: 12px; }
+  .pf-social {
+    width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--pf-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; cursor: pointer; transition: all 0.15s;
+    color: var(--pf-ink2); text-decoration: none;
+  }
+  .pf-social:hover { background: var(--pf-accent); border-color: var(--pf-accent); color: #fff; }
+
+  /* Responsive preview adjustments */
+  @media (max-width: 767px) {
+    .pf-hero { grid-template-columns: 1fr; padding: 50px 5%; }
+    .pf-hero-avatar { max-width: 220px; margin: 0 auto; }
+    .pf-contact-grid { grid-template-columns: 1fr; }
+    .pf-exp-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ── RESPONSIVE APP ── */
+  @media (max-width: 1024px) {
+    .app-body { grid-template-columns: 300px 1fr; }
+  }
+  @media (max-width: 768px) {
+    .app-body { grid-template-columns: 1fr; }
+    .sidebar { position: relative; max-height: none; }
+    .preview-pane { min-height: 80vh; }
+    .app-header { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Portfolio<em>Gen</em>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" id="btnToggleCode">⟨/⟩ View Code</button>
+    <button class="btn btn-teal" id="btnDownload">↓ Download</button>
+    <button class="btn btn-accent" id="btnPublish">↗ Export HTML</button>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<div class="app-body">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="info">Info</button>
+      <button class="tab-btn" data-tab="skills">Skills</button>
+      <button class="tab-btn" data-tab="projects">Work</button>
+      <button class="tab-btn" data-tab="design">Design</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+
+    <!-- Tab: Info -->
+    <div class="tab-panel active" id="tab-info">
+      <div class="form-section">
+        <div class="form-section-title">Personal Info</div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="iName" type="text" value="Alex Morgan" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Professional Title</label>
+          <input class="form-input" id="iRole" type="text" value="Product Designer & Developer" placeholder="e.g. UX Designer">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tagline / One-liner</label>
+          <input class="form-input" id="iTagline" type="text" value="Crafting experiences that matter." placeholder="Short impactful tagline">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio / About</label>
+          <textarea class="form-textarea" id="iBio" rows="4">I design and build digital products that blend thoughtful aesthetics with functional precision. 5+ years working at the intersection of design and engineering — turning complex problems into simple, elegant solutions.</textarea>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Contact & Social</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="iEmail" type="email" value="alex@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-input" id="iLocation" type="text" value="San Francisco, CA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          <input class="form-input" id="iGithub" type="url" value="https://github.com/alexmorgan" placeholder="https://github.com/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn URL</label>
+          <input class="form-input" id="iLinkedin" type="url" value="https://linkedin.com/in/alexmorgan" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Twitter / X</label>
+          <input class="form-input" id="iTwitter" type="text" value="@alexmorgan" placeholder="@handle">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Stats</div>
+        <div class="form-group">
+          <label class="form-label">Years of Experience</label>
+          <input class="form-input" id="iYears" type="number" value="5" min="0" max="50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Projects Completed</label>
+          <input class="form-input" id="iProjects" type="number" value="48" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Happy Clients</label>
+          <input class="form-input" id="iClients" type="number" value="32" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Awards / Recognition</label>
+          <input class="form-input" id="iAwards" type="number" value="12" min="0">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Experience</div>
+        <div id="expList"></div>
+        <button class="btn btn-ghost" style="width:100%; margin-top:6px; font-size:0.75rem;" id="btnAddExp">+ Add Experience</button>
+      </div>
+    </div>
+
+    <!-- Tab: Skills -->
+    <div class="tab-panel" id="tab-skills">
+      <div class="form-section">
+        <div class="form-section-title">Technical Skills</div>
+        <div class="skill-input-row" style="margin-bottom:8px;">
+          <input class="form-input" id="iSkillName" type="text" placeholder="Skill name (e.g. Figma)">
+          <input class="form-input" id="iSkillLevel" type="number" placeholder="%" min="0" max="100" style="width:70px;">
+          <button class="btn btn-accent btn-sm" id="btnAddSkill" style="white-space:nowrap; padding:8px 12px;">Add</button>
+        </div>
+        <div id="skillsList"></div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Skill Tags</div>
+        <div class="skill-input-row" style="margin-bottom:8px;">
+          <input class="form-input" id="iTagName" type="text" placeholder="Tag (e.g. React, Python)">
+          <button class="btn btn-teal btn-sm" id="btnAddTag" style="white-space:nowrap; padding:8px 12px;">Add</button>
+        </div>
+        <div class="skills-tags" id="tagsList"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Projects -->
+    <div class="tab-panel" id="tab-projects">
+      <div id="projectsList"></div>
+      <button class="btn btn-accent" style="width:100%; margin-top:8px; font-size:0.75rem;" id="btnAddProject">+ Add Project</button>
+    </div>
+
+    <!-- Tab: Design -->
+    <div class="tab-panel" id="tab-design">
+      <div class="form-section">
+        <div class="form-section-title">Theme Style</div>
+        <div class="theme-grid" id="themeGrid">
+          <div class="theme-card selected" data-theme="minimal">
+            <div class="theme-preview" style="background:#fafaf8; border:1px solid #e0ddd6;">
+              <div class="theme-bar" style="background:#d4522a;"></div>
+              <div class="theme-bar" style="background:#e0ddd6;"></div>
+              <div class="theme-bar" style="background:#5a5753;"></div>
+            </div>
+            <div class="theme-name">Minimal</div>
+          </div>
+          <div class="theme-card" data-theme="dark">
+            <div class="theme-preview" style="background:#101010; border:1px solid #2a2a2a;">
+              <div class="theme-bar" style="background:#e8833a;"></div>
+              <div class="theme-bar" style="background:#2a2a2a;"></div>
+              <div class="theme-bar" style="background:#8a8780;"></div>
+            </div>
+            <div class="theme-name">Dark</div>
+          </div>
+          <div class="theme-card" data-theme="bold">
+            <div class="theme-preview" style="background:#fff; border:1px solid #e0e0e0;">
+              <div class="theme-bar" style="background:#2a7d6b;"></div>
+              <div class="theme-bar" style="background:#e0e0e0;"></div>
+              <div class="theme-bar" style="background:#555;"></div>
+            </div>
+            <div class="theme-name">Bold</div>
+          </div>
+          <div class="theme-card" data-theme="retro">
+            <div class="theme-preview" style="background:#fdf6e3; border:1px solid #d8c89a;">
+              <div class="theme-bar" style="background:#c9a84c;"></div>
+              <div class="theme-bar" style="background:#d8c89a;"></div>
+              <div class="theme-bar" style="background:#5a4f3a;"></div>
+            </div>
+            <div class="theme-name">Retro</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Accent Color</div>
+        <div class="color-grid" id="colorGrid">
+          <div class="color-swatch selected" data-color="#d4522a" style="background:#d4522a;" title="Terracotta"></div>
+          <div class="color-swatch" data-color="#e8833a" style="background:#e8833a;" title="Amber"></div>
+          <div class="color-swatch" data-color="#c9a84c" style="background:#c9a84c;" title="Gold"></div>
+          <div class="color-swatch" data-color="#2a7d6b" style="background:#2a7d6b;" title="Teal"></div>
+          <div class="color-swatch" data-color="#2c5f8a" style="background:#2c5f8a;" title="Navy"></div>
+          <div class="color-swatch" data-color="#6b4fa8" style="background:#6b4fa8;" title="Violet"></div>
+          <div class="color-swatch" data-color="#c0415a" style="background:#c0415a;" title="Rose"></div>
+          <div class="color-swatch" data-color="#1a1916" style="background:#1a1916;" title="Ink"></div>
+          <div class="color-swatch" data-color="#3a7abf" style="background:#3a7abf;" title="Sky"></div>
+          <div class="color-swatch" data-color="#4a9e5a" style="background:#4a9e5a;" title="Forest"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+          <label class="form-label" style="margin:0; white-space:nowrap;">Custom:</label>
+          <input type="color" id="iCustomColor" value="#d4522a" style="width:36px; height:30px; border:1px solid var(--border); border-radius:4px; cursor:pointer;">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Typography Scale</div>
+        <div class="form-group">
+          <label class="form-label">Base Font Size</label>
+          <div class="range-row">
+            <input type="range" id="iFontSize" min="12" max="20" value="16">
+            <span class="range-label" id="iFontSizeVal">16px</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Border Radius</label>
+          <div class="range-row">
+            <input type="range" id="iBorderRadius" min="0" max="20" value="8">
+            <span class="range-label" id="iBorderRadiusVal">8px</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Spacing Scale</label>
+          <div class="range-row">
+            <input type="range" id="iSpacing" min="60" max="140" value="100">
+            <span class="range-label" id="iSpacingVal">100%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Settings -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="form-section">
+        <div class="form-section-title">Sections to Include</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Hero / Introduction</span>
+          <div class="toggle on" data-setting="showHero"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Stats Bar</span>
+          <div class="toggle on" data-setting="showStats"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Skills Section</span>
+          <div class="toggle on" data-setting="showSkills"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Projects / Work</span>
+          <div class="toggle on" data-setting="showProjects"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Experience / Timeline</span>
+          <div class="toggle on" data-setting="showExperience"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Contact Form</span>
+          <div class="toggle on" data-setting="showContact"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Footer</span>
+          <div class="toggle on" data-setting="showFooter"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Navigation</div>
+        <div class="form-group">
+          <label class="form-label">Nav Style</label>
+          <select class="form-select" id="iNavStyle">
+            <option value="sticky">Sticky (follows scroll)</option>
+            <option value="fixed">Fixed top</option>
+            <option value="static">Static</option>
+          </select>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show CTA button in nav</span>
+          <div class="toggle on" data-setting="showNavCta"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Meta / SEO</div>
+        <div class="form-group">
+          <label class="form-label">Page Title</label>
+          <input class="form-input" id="iPageTitle" type="text" value="Alex Morgan — Portfolio">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Meta Description</label>
+          <textarea class="form-textarea" id="iMetaDesc" rows="2">Product designer and developer crafting digital experiences.</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Favicon Emoji</label>
+          <input class="form-input" id="iFavicon" type="text" value="✦" maxlength="2" style="width:80px; text-align:center; font-size:1.2rem;">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Animations</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Scroll animations</span>
+          <div class="toggle on" data-setting="scrollAnim"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Hover effects</span>
+          <div class="toggle on" data-setting="hoverEffects"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Smooth scroll</span>
+          <div class="toggle on" data-setting="smoothScroll"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Reset</div>
+        <button class="btn btn-ghost" style="width:100%; border-color:#e24b4a; color:#e24b4a;" id="btnReset">↺ Reset to Defaults</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ PREVIEW PANE ══ -->
+  <main class="preview-pane" id="previewPane">
+    <div class="preview-toolbar">
+      <span class="preview-toolbar-title">Live Preview</span>
+      <div class="device-btns">
+        <button class="device-btn active" data-device="desktop" title="Desktop">🖥</button>
+        <button class="device-btn" data-device="tablet" title="Tablet">⬛</button>
+        <button class="device-btn" data-device="mobile" title="Mobile">📱</button>
+      </div>
+    </div>
+    <div class="preview-viewport" id="previewViewport">
+      <div class="preview-frame-wrap desktop" id="previewFrame">
+        <div id="portfolioRoot"></div>
+      </div>
+    </div>
+
+    <!-- Code panel (toggled) -->
+    <div class="code-panel" id="codePanel">
+      <div class="code-toolbar">
+        <span class="code-toolbar-title">Generated HTML</span>
+        <button class="btn btn-ghost" id="btnCopyCode" style="font-size:0.72rem;">⎘ Copy</button>
+      </div>
+      <div class="code-output" id="codeOutput"></div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span id="statusText">Portfolio ready · 7 sections · 3 projects</span>
+      <span style="margin-left:auto; color:#4a4845;">PortfolioGen v2.0</span>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+const state = {
+  theme: 'minimal',
+  color: '#d4522a',
+  fontSize: 16,
+  borderRadius: 8,
+  spacing: 100,
+  showHero: true,
+  showStats: true,
+  showSkills: true,
+  showProjects: true,
+  showExperience: true,
+  showContact: true,
+  showFooter: true,
+  showNavCta: true,
+  scrollAnim: true,
+  hoverEffects: true,
+  smoothScroll: true,
+  skills: [
+    { name: 'UI/UX Design', level: 92 },
+    { name: 'React / Next.js', level: 85 },
+    { name: 'Figma', level: 95 },
+    { name: 'CSS / Animation', level: 88 },
+    { name: 'Node.js', level: 72 },
+    { name: 'TypeScript', level: 78 },
+  ],
+  tags: ['Design Systems', 'Prototyping', 'A/B Testing', 'Accessibility', 'GraphQL', 'Docker'],
+  projects: [
+    { name: 'Novu Design System', category: 'Design System', desc: 'Component library with 200+ tokens powering 4 products.', emoji: '🎨', tags: ['Figma', 'React', 'Storybook'] },
+    { name: 'Fluxboard Analytics', category: 'Web App', desc: 'Real-time data dashboard with custom charting engine.', emoji: '📊', tags: ['Next.js', 'D3.js', 'Postgres'] },
+    { name: 'Forma Mobile App', category: 'Mobile', desc: 'Habit-tracking iOS app — 4.8★ rating, 50k downloads.', emoji: '📱', tags: ['Swift', 'Figma', 'CoreData'] },
+  ],
+  experiences: [
+    { date: '2022 — Now', role: 'Senior Product Designer', company: 'Vercel Inc.', desc: 'Leading design for the Edge Network dashboard. Shipped 3 major product lines.' },
+    { date: '2020 — 2022', role: 'UX Engineer', company: 'Stripe', desc: 'Built and maintained the Stripe Elements design system.' },
+    { date: '2018 — 2020', role: 'UI Designer', company: 'Freelance', desc: 'Worked with 20+ startups across fintech, health, and SaaS verticals.' },
+  ],
+};
+
+// ══════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function updateStatus() {
+  const sections = ['showHero','showStats','showSkills','showProjects','showExperience','showContact','showFooter']
+    .filter(k => state[k]).length;
+  document.getElementById('statusText').textContent =
+    `Portfolio ready · ${sections} sections · ${state.projects.length} projects`;
+}
+
+function get(id) { return document.getElementById(id); }
+function val(id) { return get(id)?.value ?? ''; }
+
+// ══════════════════════════════════════════
+//  RENDER SIDEBAR LISTS
+// ══════════════════════════════════════════
+function renderSkillsList() {
+  const el = get('skillsList');
+  el.innerHTML = state.skills.map((s, i) => `
+    <div class="project-item" style="padding:8px 10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:0.78rem; font-weight:700;">${s.name} <span style="color:var(--ink3); font-weight:400;">${s.level}%</span></div>
+        <button class="btn-sm btn-danger" onclick="removeSkill(${i})">✕</button>
+      </div>
+      <div class="progress-bar-wrap" style="margin-top:5px;">
+        <div class="progress-bar" style="width:${s.level}%; background:var(--accent);"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTags() {
+  const el = get('tagsList');
+  el.innerHTML = state.tags.map((t, i) => `
+    <div class="skill-tag">
+      ${t}
+      <button class="skill-tag-remove" onclick="removeTag(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function renderProjects() {
+  const el = get('projectsList');
+  el.innerHTML = state.projects.map((p, i) => `
+    <div class="accordion-item" id="proj-acc-${i}">
+      <div class="accordion-header" onclick="toggleAccordion('proj-acc-${i}')">
+        <span>${p.emoji} ${p.name}</span>
+        <span class="accordion-arrow">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="form-group">
+          <label class="form-label">Project Name</label>
+          <input class="form-input" value="${p.name}" oninput="state.projects[${i}].name=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji / Icon</label>
+          <input class="form-input" value="${p.emoji}" maxlength="2" style="width:70px;" oninput="state.projects[${i}].emoji=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input class="form-input" value="${p.category}" oninput="state.projects[${i}].category=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" rows="2" oninput="state.projects[${i}].desc=this.value; render();">${p.desc}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma separated)</label>
+          <input class="form-input" value="${p.tags.join(', ')}" oninput="state.projects[${i}].tags=this.value.split(',').map(t=>t.trim()).filter(Boolean); render();">
+        </div>
+        <button class="btn-sm btn-danger" style="margin-top:6px;" onclick="removeProject(${i})">✕ Remove Project</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderExpList() {
+  const el = get('expList');
+  el.innerHTML = state.experiences.map((e, i) => `
+    <div class="accordion-item" id="exp-acc-${i}">
+      <div class="accordion-header" onclick="toggleAccordion('exp-acc-${i}')">
+        <span>${e.role}</span>
+        <span class="accordion-arrow">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="form-group">
+          <label class="form-label">Date Range</label>
+          <input class="form-input" value="${e.date}" oninput="state.experiences[${i}].date=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title</label>
+          <input class="form-input" value="${e.role}" oninput="state.experiences[${i}].role=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-input" value="${e.company}" oninput="state.experiences[${i}].company=this.value; render();">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" rows="2" oninput="state.experiences[${i}].desc=this.value; render();">${e.desc}</textarea>
+        </div>
+        <button class="btn-sm btn-danger" style="margin-top:6px;" onclick="removeExp(${i})">✕ Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  PORTFOLIO RENDERER
+// ══════════════════════════════════════════
+function render() {
+  const name     = val('iName')     || 'Alex Morgan';
+  const role     = val('iRole')     || 'Designer & Developer';
+  const tagline  = val('iTagline')  || 'Crafting experiences that matter.';
+  const bio      = val('iBio')      || '';
+  const email    = val('iEmail')    || '';
+  const location = val('iLocation') || '';
+  const github   = val('iGithub')   || '#';
+  const linkedin = val('iLinkedin') || '#';
+  const twitter  = val('iTwitter')  || '';
+  const years    = val('iYears')    || '5';
+  const projects = val('iProjects') || '48';
+  const clients  = val('iClients')  || '32';
+  const awards   = val('iAwards')   || '12';
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+
+  let html = `<div class="pf-root theme-${state.theme}" style="--pf-color:${state.color}; font-size:${state.fontSize}px;">`;
+
+  // NAV
+  html += `<nav class="pf-nav" style="position:${state.showHero ? 'sticky' : 'relative'};">
+    <div class="pf-nav-logo">${name.split(' ')[0]}<em style="color:var(--pf-accent)">.</em></div>
+    <div class="pf-nav-links">`;
+  if (state.showSkills)     html += `<span class="pf-nav-link">Skills</span>`;
+  if (state.showProjects)   html += `<span class="pf-nav-link">Work</span>`;
+  if (state.showExperience) html += `<span class="pf-nav-link">Experience</span>`;
+  if (state.showContact)    html += `<span class="pf-nav-link">Contact</span>`;
+  html += `</div>`;
+  if (state.showNavCta) html += `<button class="pf-nav-cta" style="background:var(--pf-accent);">Hire Me</button>`;
+  html += `</nav>`;
+
+  // HERO
+  if (state.showHero) {
+    html += `<div class="pf-hero" style="padding:${state.spacing * 0.8}px 5%;">
+      <div>
+        <div class="pf-hero-eyebrow">${tagline}</div>
+        <h1 class="pf-hero-name">${name}</h1>
+        <p class="pf-hero-role">${role}</p>
+        <p class="pf-hero-bio">${bio}</p>
+        <div class="pf-hero-btns">
+          <button class="pf-btn-primary" style="background:var(--pf-accent); border-radius:${state.borderRadius}px;">View My Work</button>
+          <button class="pf-btn-outline" style="border-radius:${state.borderRadius}px;">Download CV</button>
+        </div>
+      </div>
+      <div class="pf-hero-avatar" style="border-radius:${Math.max(state.borderRadius, 8)}px;">
+        <div class="pf-avatar-placeholder">${initials}</div>
+      </div>
+    </div>`;
+  }
+
+  // STATS
+  if (state.showStats) {
+    html += `<div class="pf-stats">
+      <div class="pf-stat"><div class="pf-stat-num">${years}<em style="color:var(--pf-accent);">+</em></div><div class="pf-stat-label">Years Exp.</div></div>
+      <div class="pf-stat"><div class="pf-stat-num">${projects}<em style="color:var(--pf-accent);">+</em></div><div class="pf-stat-label">Projects</div></div>
+      <div class="pf-stat"><div class="pf-stat-num">${clients}<em style="color:var(--pf-accent);">+</em></div><div class="pf-stat-label">Clients</div></div>
+      <div class="pf-stat"><div class="pf-stat-num">${awards}</div><div class="pf-stat-label">Awards</div></div>
+    </div>`;
+  }
+
+  // SKILLS
+  if (state.showSkills && (state.skills.length || state.tags.length)) {
+    html += `<div class="pf-section" style="padding:${state.spacing * 0.8}px 5%;">
+      <div class="pf-section-header">
+        <div class="pf-section-label">Expertise</div>
+        <h2 class="pf-section-title">Skills & Tools</h2>
+      </div>`;
+    if (state.skills.length) {
+      html += `<div class="pf-skills-grid">`;
+      state.skills.forEach(s => {
+        html += `<div class="pf-skill-card" style="border-radius:${state.borderRadius}px;">
+          <div class="pf-skill-name">${s.name} <span style="color:var(--pf-accent); font-size:0.72rem;">${s.level}%</span></div>
+          <div class="pf-skill-bar"><div class="pf-skill-fill" style="width:${s.level}%; background:var(--pf-accent);"></div></div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    if (state.tags.length) {
+      html += `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;">`;
+      state.tags.forEach(t => {
+        html += `<span style="background:var(--pf-bg2); border:1px solid var(--pf-border); border-radius:20px; padding:5px 14px; font-size:0.78rem; font-weight:600; color:var(--pf-ink2);">${t}</span>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+
+  // PROJECTS
+  if (state.showProjects && state.projects.length) {
+    html += `<div class="pf-section" style="padding:${state.spacing * 0.8}px 5%; background:var(--pf-bg2); max-width:none;">
+      <div style="max-width:1100px; margin:0 auto;">
+      <div class="pf-section-header">
+        <div class="pf-section-label">Portfolio</div>
+        <h2 class="pf-section-title">Selected Work</h2>
+      </div>
+      <div class="pf-projects-grid">`;
+    state.projects.forEach(p => {
+      html += `<div class="pf-project-card" style="border-radius:${state.borderRadius + 4}px;">
+        <div class="pf-project-thumb" style="font-size:2.5rem;">${p.emoji}</div>
+        <div class="pf-project-body">
+          <div class="pf-project-category" style="color:var(--pf-accent);">${p.category}</div>
+          <div class="pf-project-name">${p.name}</div>
+          <div class="pf-project-desc">${p.desc}</div>
+          <div class="pf-project-tags">`;
+      p.tags.forEach(t => {
+        html += `<span class="pf-tag" style="border-radius:20px;">${t}</span>`;
+      });
+      html += `</div></div></div>`;
+    });
+    html += `</div></div></div>`;
+  }
+
+  // EXPERIENCE
+  if (state.showExperience && state.experiences.length) {
+    html += `<div class="pf-section" style="padding:${state.spacing * 0.8}px 5%;">
+      <div class="pf-section-header">
+        <div class="pf-section-label">Career</div>
+        <h2 class="pf-section-title">Experience</h2>
+      </div>
+      <div class="pf-exp-list">`;
+    state.experiences.forEach(e => {
+      html += `<div class="pf-exp-item">
+        <div class="pf-exp-date">${e.date}</div>
+        <div>
+          <div class="pf-exp-role">${e.role}</div>
+          <div class="pf-exp-company" style="color:var(--pf-accent);">${e.company}</div>
+          <div class="pf-exp-desc">${e.desc}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // CONTACT
+  if (state.showContact) {
+    html += `<div class="pf-section" style="padding:${state.spacing * 0.8}px 5%; background:var(--pf-bg2); max-width:none;">
+      <div style="max-width:1100px; margin:0 auto;">
+      <div class="pf-section-header">
+        <div class="pf-section-label">Get in touch</div>
+        <h2 class="pf-section-title">Let's Work Together</h2>
+      </div>
+      <div class="pf-contact-grid">
+        <div class="pf-contact-info">
+          ${email ? `<div class="pf-contact-item"><div class="pf-contact-icon">✉</div><span>${email}</span></div>` : ''}
+          ${location ? `<div class="pf-contact-item"><div class="pf-contact-icon">📍</div><span>${location}</span></div>` : ''}
+          ${github ? `<div class="pf-contact-item"><div class="pf-contact-icon">⟨/⟩</div><span>${github}</span></div>` : ''}
+          ${twitter ? `<div class="pf-contact-item"><div class="pf-contact-icon">𝕏</div><span>${twitter}</span></div>` : ''}
+          <div style="margin-top:16px;">
+            <p style="font-size:0.85rem; color:var(--pf-ink2); line-height:1.8;">Open to freelance opportunities, collaborations, and full-time roles. Let's build something remarkable together.</p>
+          </div>
+        </div>
+        <div class="pf-contact-form">
+          <input class="pf-form-input" style="border-radius:${state.borderRadius}px;" placeholder="Your name" readonly>
+          <input class="pf-form-input" style="border-radius:${state.borderRadius}px;" placeholder="Your email" readonly>
+          <textarea class="pf-form-textarea" style="border-radius:${state.borderRadius}px;" placeholder="Your message…" readonly></textarea>
+          <button class="pf-btn-primary" style="background:var(--pf-accent); border-radius:${state.borderRadius}px; align-self:flex-start;">Send Message →</button>
+        </div>
+      </div>
+      </div></div>`;
+  }
+
+  // FOOTER
+  if (state.showFooter) {
+    html += `<footer class="pf-footer">
+      <span>© ${new Date().getFullYear()} ${name}. Crafted with care.</span>
+      <div class="pf-socials">
+        ${github ? `<a class="pf-social" href="${github}" title="GitHub">⟨/⟩</a>` : ''}
+        ${linkedin ? `<a class="pf-social" href="${linkedin}" title="LinkedIn">in</a>` : ''}
+        ${twitter ? `<a class="pf-social" title="Twitter">𝕏</a>` : ''}
+        ${email ? `<a class="pf-social" title="Email">✉</a>` : ''}
+      </div>
+    </footer>`;
+  }
+
+  html += `</div>`;
+
+  get('portfolioRoot').innerHTML = html;
+  updateCodePanel(html);
+  updateStatus();
+}
+
+// ══════════════════════════════════════════
+//  CODE OUTPUT
+// ══════════════════════════════════════════
+function buildFullHTML() {
+  const name = val('iName') || 'Portfolio';
+  const pageTitle = val('iPageTitle') || `${name} — Portfolio`;
+  const metaDesc = val('iMetaDesc') || '';
+  const favicon = val('iFavicon') || '✦';
+  const portfolioContent = get('portfolioRoot').innerHTML;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle}</title>
+  <meta name="description" content="${metaDesc}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${favicon}</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Generated by PortfolioGen */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    :root {
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-ui: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+    body { font-family: var(--font-ui); overflow-x: hidden; }
+    /* [Styles included in full export] */
+  </style>
+</head>
+<body>
+${portfolioContent}
+</body>
+</html>`;
+}
+
+function updateCodePanel(html) {
+  const codeEl = get('codeOutput');
+  if (codeEl) {
+    const pretty = html
+      .replace(/></g, '>\n<')
+      .replace(/\n\s*\n/g, '\n')
+      .split('\n').map(l => '  ' + l).join('\n');
+    codeEl.textContent = pretty.substring(0, 4000) + (pretty.length > 4000 ? '\n  … (truncated, use Export for full code)' : '');
+  }
+}
+
+// ══════════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════════
+function removeSkill(i) { state.skills.splice(i, 1); renderSkillsList(); render(); }
+function removeTag(i)   { state.tags.splice(i, 1); renderTags(); render(); }
+function removeProject(i) { state.projects.splice(i, 1); renderProjects(); render(); }
+function removeExp(i) { state.experiences.splice(i, 1); renderExpList(); render(); }
+
+function toggleAccordion(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════
+//  EVENT LISTENERS
+// ══════════════════════════════════════════
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    get('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Live input changes
+['iName','iRole','iTagline','iBio','iEmail','iLocation','iGithub','iLinkedin','iTwitter',
+ 'iYears','iProjects','iClients','iAwards','iPageTitle','iMetaDesc','iFavicon'].forEach(id => {
+  const el = get(id);
+  if (el) el.addEventListener('input', () => render());
+});
+
+// Add skill
+get('btnAddSkill').addEventListener('click', () => {
+  const name  = val('iSkillName').trim();
+  const level = parseInt(val('iSkillLevel')) || 80;
+  if (!name) return;
+  state.skills.push({ name, level: Math.min(100, Math.max(0, level)) });
+  get('iSkillName').value = '';
+  get('iSkillLevel').value = '';
+  renderSkillsList(); render();
+});
+get('iSkillName').addEventListener('keydown', e => { if(e.key==='Enter') get('btnAddSkill').click(); });
+
+// Add tag
+get('btnAddTag').addEventListener('click', () => {
+  const t = val('iTagName').trim();
+  if (!t) return;
+  state.tags.push(t);
+  get('iTagName').value = '';
+  renderTags(); render();
+});
+get('iTagName').addEventListener('keydown', e => { if(e.key==='Enter') get('btnAddTag').click(); });
+
+// Add project
+get('btnAddProject').addEventListener('click', () => {
+  state.projects.push({ name: 'New Project', category: 'Web', desc: 'Project description here.', emoji: '🚀', tags: ['Design', 'Code'] });
+  renderProjects(); render();
+  setTimeout(() => toggleAccordion(`proj-acc-${state.projects.length - 1}`), 50);
+});
+
+// Add experience
+get('btnAddExp').addEventListener('click', () => {
+  state.experiences.push({ date: '2024 — Now', role: 'New Role', company: 'Company Name', desc: 'Brief description of responsibilities.' });
+  renderExpList(); render();
+  setTimeout(() => toggleAccordion(`exp-acc-${state.experiences.length - 1}`), 50);
+});
+
+// Themes
+document.querySelectorAll('.theme-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.theme = card.dataset.theme;
+    render();
+  });
+});
+
+// Colors
+document.querySelectorAll('.color-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+    sw.classList.add('selected');
+    state.color = sw.dataset.color;
+    get('iCustomColor').value = state.color;
+    render();
+  });
+});
+get('iCustomColor').addEventListener('input', e => {
+  state.color = e.target.value;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  render();
+});
+
+// Ranges
+get('iFontSize').addEventListener('input', e => {
+  state.fontSize = +e.target.value;
+  get('iFontSizeVal').textContent = state.fontSize + 'px';
+  render();
+});
+get('iBorderRadius').addEventListener('input', e => {
+  state.borderRadius = +e.target.value;
+  get('iBorderRadiusVal').textContent = state.borderRadius + 'px';
+  render();
+});
+get('iSpacing').addEventListener('input', e => {
+  state.spacing = +e.target.value;
+  get('iSpacingVal').textContent = state.spacing + '%';
+  render();
+});
+
+// Toggles
+document.querySelectorAll('.toggle').forEach(tog => {
+  tog.addEventListener('click', () => {
+    const key = tog.dataset.setting;
+    state[key] = !state[key];
+    tog.classList.toggle('on', state[key]);
+    render();
+  });
+});
+
+// Device preview
+document.querySelectorAll('.device-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const frame = get('previewFrame');
+    frame.className = 'preview-frame-wrap ' + btn.dataset.device;
+  });
+});
+
+// Code toggle
+get('btnToggleCode').addEventListener('click', () => {
+  const panel = get('codePanel');
+  panel.classList.toggle('visible');
+  get('btnToggleCode').textContent = panel.classList.contains('visible') ? '⊠ Hide Code' : '⟨/⟩ View Code';
+});
+
+// Copy code
+get('btnCopyCode').addEventListener('click', () => {
+  navigator.clipboard.writeText(get('codeOutput').textContent).then(() => showToast('Code copied to clipboard!'));
+});
+
+// Download
+get('btnDownload').addEventListener('click', () => {
+  const full = buildFullHTML();
+  const blob = new Blob([full], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'portfolio.html'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('portfolio.html downloaded!');
+});
+
+// Export
+get('btnPublish').addEventListener('click', () => {
+  const full = buildFullHTML();
+  const win = window.open('', '_blank');
+  win.document.write(full);
+  win.document.close();
+  showToast('Opened in new tab!');
+});
+
+// Reset
+get('btnReset').addEventListener('click', () => {
+  if (confirm('Reset all fields to default values?')) location.reload();
+});
+
+// Nav style (visual only)
+get('iNavStyle')?.addEventListener('change', () => render());
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+renderSkillsList();
+renderTags();
+renderProjects();
+renderExpList();
+render();
+</script>
+</body>
+</html>
